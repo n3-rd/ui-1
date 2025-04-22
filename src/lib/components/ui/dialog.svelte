@@ -10,7 +10,8 @@
 		open = $bindable(false), 
 		closeOnEscape = true,
 		closeOnOutsideClick = true,
-		className = ''
+		className = '',
+		children = ({ handleClose }: { handleClose: () => void }) => ''
 	} = $props();
 
 	function handleClose() {
@@ -29,6 +30,12 @@
 	function handleOutsideClick(event: MouseEvent) {
 		if (closeOnOutsideClick && event.target === event.currentTarget && open) {
 			handleClose();
+		}
+	}
+
+	function handleOutsideKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			handleOutsideClick(event as unknown as MouseEvent);
 		}
 	}
 
@@ -52,6 +59,8 @@
 	<div
 		class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
 		onclick={handleOutsideClick}
+		onkeydown={handleOutsideKeydown}
+		role="presentation"
 		transition:fade={{ duration: 200 }}
 	>
 		<div
@@ -63,7 +72,7 @@
 			aria-modal="true"
 			transition:scale={{ duration: 300, start: 0.95, opacity: 0, easing: cubicOut }}
 		>
-			<slot {handleClose} />
+			{@render children({ handleClose })}
 		</div>
 	</div>
 {/if} 
